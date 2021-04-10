@@ -1,10 +1,9 @@
 from copy import deepcopy
 
-"""
-This is a 9x9 Sudoku solver that uses a basic DFS algorithm. This implementation is optimized to solve some
-particularly tricky puzzles (ones that would require considering 1+ million puzzle states) by considering each cell at
-each iteration and ensuring that a basic row + column + box check has not made any individual cell invalid. 
-"""
+"""This is a 9x9 Sudoku solver that uses a basic DFS algorithm. This implementation is optimized to solve some 
+particularly tricky puzzles (ones that would require considering 1+ million puzzle states) by considering each cell 
+at each iteration and ensuring that a basic row + column + box check has not made any individual cell invalid. This 
+dramatically cuts down on the number of states that need to be considered and ends up solving them much faster. """
 
 SIZE = 9  # This is a 9x9 Sudoku
 
@@ -53,6 +52,38 @@ def done(state):
                 return False
     return True
 
+def validate_state(state):
+    """Basic validation of the state just to make sure that the initial board received is actually valid. Note that
+    the iterate_step function does not actually check for invalid configurations like duplicate numbers in the same
+    row"""
+
+    # Validate rows
+    for i in range(SIZE):
+        row = state[i]
+        values = [x for x in row if not isinstance(x, set)]
+        if len(values) != len(set(values)):
+            return False
+
+    # Validate columns
+    for j in range(SIZE):
+        column = [state[x][j] for x in range(SIZE)]
+        values = [x for x in column if not isinstance(x, set)]
+        if len(values) != len(set(values)):
+            return False
+
+    # Validate boxes
+    for x in range(3):
+        for y in range(3):
+            values = []
+            for i in range(3 * x, 3 * x + 3):
+                for j in range(3 * y, 3 * y + 3):
+                    cell = state[i][j]
+                    if not isinstance(cell, set):
+                        values.append(cell)
+            if len(values) != len(set(values)):
+                return False
+
+    return True
 
 def iterate_step(state):
     """
@@ -142,7 +173,7 @@ def solve(state):
         for j in range(SIZE):
             cell = state[i][j]
             if isinstance(cell, set):
-                for value in cell:
+                for value in sorted(cell):
                     new_state = deepcopy(state)
                     new_state[i][j] = value
                     solved = solve(new_state)
@@ -155,7 +186,11 @@ def solve_board(board):
     """Takes a board (9x9 list of numbers) and returns either a solved board or a message stating that the board is
     invalid"""
     state = board_to_state(board)
-    return solve(state)
+    if not validate_state(state):
+        return 'Input board is invalid!'
 
-
-
+    result = solve(state)
+    if validate_state(result):
+        return result
+    else:
+        return 'Input board is invalid!'
