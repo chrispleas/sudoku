@@ -345,7 +345,7 @@ class TestSudoku(unittest.TestCase):
         result = sudoku.solve_board(TestSudoku.outside_board_2)
         self.assertTrue(TestSudoku.fits(TestSudoku.outside_board_2, result))
 
-    @unittest.skip
+    @unittest.skip("These are especially difficult tests that take on average over 1 second each")
     def test_lots(self):
         text_boards = [
             '050083017000100400304005608000030009090824500006000070009000050007290086103607204',
