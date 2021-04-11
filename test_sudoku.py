@@ -253,6 +253,21 @@ class TestSudoku(unittest.TestCase):
         [0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
 
+    @staticmethod
+    def fits(board, solution):
+        if isinstance(solution, str):
+            return False
+        for i, row in enumerate(board):
+            for j, val in enumerate(row):
+                if val in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
+                    if solution[i][j] != val:
+                        return False
+        return True
+
+    def test_fits(self):
+        self.assertFalse(TestSudoku.fits(self.easy_board_1, self.outside_board_1))
+        self.assertTrue(TestSudoku.fits(self.easy_board_1, self.easy_board_solution))
+
     def test_board_to_state(self):
         state = sudoku.board_to_state(TestSudoku.one_clue_board)
         self.assertEqual(len(state[0]), 9)
@@ -287,37 +302,77 @@ class TestSudoku(unittest.TestCase):
         self.assertEqual(sudoku.solve_board(TestSudoku.easy_board_5), TestSudoku.easy_board_solution)
 
     def test_empty(self):
-        sudoku.solve_board(TestSudoku.empty_board)
+        result = sudoku.solve_board(TestSudoku.empty_board)
+        self.assertTrue(TestSudoku.fits(TestSudoku.empty_board, result))
 
     def test_solve_completed(self):
-        sudoku.solve_board(TestSudoku.solved_board)
+        result = sudoku.solve_board(TestSudoku.solved_board)
+        self.assertTrue(TestSudoku.fits(TestSudoku.solved_board, result))
 
     def test_almost_empty_1(self):
-        sudoku.solve_board(TestSudoku.almost_empty_board_1)
+        result = sudoku.solve_board(TestSudoku.almost_empty_board_1)
+        self.assertTrue(TestSudoku.fits(TestSudoku.almost_empty_board_1, result))
 
     def test_almost_empty_2(self):
-        sudoku.solve_board(TestSudoku.almost_empty_board_2)
+        result = sudoku.solve_board(TestSudoku.almost_empty_board_2)
+        self.assertTrue(TestSudoku.fits(TestSudoku.almost_empty_board_2, result))
 
     def test_almost_empty_3(self):
-        sudoku.solve_board(TestSudoku.almost_empty_board_3)
+        result = sudoku.solve_board(TestSudoku.almost_empty_board_3)
+        self.assertTrue(TestSudoku.fits(TestSudoku.almost_empty_board_3, result))
 
     def test_almost_empty_4(self):
-        sudoku.solve_board(TestSudoku.almost_empty_board_4)
+        result = sudoku.solve_board(TestSudoku.almost_empty_board_4)
+        self.assertTrue(TestSudoku.fits(TestSudoku.almost_empty_board_4, result))
 
     def test_almost_empty_5(self):
-        sudoku.solve_board(TestSudoku.almost_empty_board_5)
+        result = sudoku.solve_board(TestSudoku.almost_empty_board_5)
+        self.assertTrue(TestSudoku.fits(TestSudoku.almost_empty_board_5, result))
 
     def test_left(self):
-        sudoku.solve_board(TestSudoku.left_board)
+        result = sudoku.solve_board(TestSudoku.left_board)
+        self.assertTrue(TestSudoku.fits(TestSudoku.left_board, result))
 
     def test_bot(self):
-        sudoku.solve_board(TestSudoku.bot_board)
+        result = sudoku.solve_board(TestSudoku.bot_board)
+        self.assertTrue(TestSudoku.fits(TestSudoku.bot_board, result))
 
     def test_outside_1(self):
-        sudoku.solve_board(TestSudoku.outside_board_1)
+        result = sudoku.solve_board(TestSudoku.outside_board_1)
+        self.assertTrue(TestSudoku.fits(TestSudoku.outside_board_1, result))
 
     def test_outside_2(self):
-        sudoku.solve_board(TestSudoku.outside_board_2)
+        result = sudoku.solve_board(TestSudoku.outside_board_2)
+        self.assertTrue(TestSudoku.fits(TestSudoku.outside_board_2, result))
+
+    @unittest.skip
+    def test_lots(self):
+        text_boards = [
+            '050083017000100400304005608000030009090824500006000070009000050007290086103607204',
+            '206030000001065070047108050500000029008019406000420001000042800609300005070000013',
+            '004502178100090030000800004600450000070900012801203500400000009350060807090300620',
+            '590000147000900008072000030700040290020030806800170050005764009036005000100800002',
+            '900084060604005207030070080760001500053000001000409603105026090002040000800003710',
+            '680905000003000508402108703390720800000000010045006900060804002001002075700013000',
+            '000340002006082073700100450082005014000098300670000005140700000905030020030000806',
+            '600050000073008020854027000201700530400069007080000900027301084060540009300000001',
+            '007500904000082305001600002800036070016004200430190050540008000029071030000000609',
+            '000000008003000400090020060000079000000061200060502070008000500010000020405000003',
+            '000000002008010900500003040000109300060030080003700000040000005301070800200000000',
+            '002000700010000060500000018000037000000049000004102300003020900080000050600000002',
+            '000000007004020600800000310000002900040090030009506000010000008006050200700000060',
+            '004003000070080000208100006003000090080020000100700003000000450000800900009005008',
+            '006001000050030000900400007001000020030090000400500001300000680000300200002008003',
+            '000000003001009060050080400000900080008670000010000200006007020030800500400000008',
+            '000000005006008700300000090000107040007000800040006000090080003001600400500020000',
+            '000005003009000040081040000000700000004002006800014030000000200040006007900050010',
+        ]
+        for text_board in text_boards:
+            board = sudoku.text_to_board(text_board)
+            result = sudoku.solve_board(board)
+            self.assertTrue(TestSudoku.fits(board, result))
+            print(result)
+
 
 if __name__ == '__main__':
     unittest.main()
