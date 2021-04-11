@@ -31,6 +31,14 @@ def print_board(board):
             out("---------------------\n")
 
 
+def text_to_board(text):
+    if len(text) != 81 or not all(char in '0123456789' for char in text):
+        raise RuntimeError(f"Provided text is invalid and cannot be turned into a board: {text}")
+    return [
+        [int(c) for c in text[i:i + 9]] for i in range(0, 81, 9)
+    ]
+
+
 def board_to_state(board):
     """Take a board (9x9 list of numbers) and replace 0s (blanks) with the set of possible values"""
 
@@ -51,6 +59,7 @@ def done(state):
             if isinstance(cell, set):
                 return False
     return True
+
 
 def validate_state(state):
     """Basic validation of the state just to make sure that the initial board received is actually valid. Note that
@@ -84,6 +93,7 @@ def validate_state(state):
                 return False
 
     return True
+
 
 def iterate_step(state):
     """
@@ -151,11 +161,14 @@ def iterate_step(state):
 
 
 def iterate(state):
-    """Iterate until we know that the puzzle cannot be solved, or we are no longer making progress"""
+    """Iterate until we know that the puzzle cannot be solved, or we are no longer making progress. Each iterate_step
+    will mutate the state. """
 
     while True:
         solvable, changed_state = iterate_step(state)
         if not solvable:
+            return False
+        if not validate_state(state):
             return False
         if not changed_state:
             return True
